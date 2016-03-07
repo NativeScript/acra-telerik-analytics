@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">ACRA Telerik Analytics Sample App</string>
+
+    <string name="crash_app">Crash App!</string>
+    <string name="action_settings">Settings</string>
+    <string name="analyticsProductKey">ce16628c49a54cd69bcd606ccc1db42e</string>
+</resources>

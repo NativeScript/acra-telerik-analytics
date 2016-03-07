@@ -7,5 +7,10 @@ cd "ACRA Telerik Analytics"
 ../gradlew packFramework
 ```
 
-This generates widgets-debug.aar and widgets-release.aar files located in the widgets/build/outputs/aar folder.
-And generates tgz files in dist folder.
+This generates .tgz and .aar files in the dist folder.
+
+If you need to make changes to the source code:
+ 1. Make your changes.
+ 2. Increment the version in package.json
+ 3. Go to the dist folder and `npm publish` the new tgz file.
+ 4. Update the dependency in the nativescript-marketplace-demo package.json to the new version.

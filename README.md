@@ -14,3 +14,6 @@ If you need to make changes to the source code:
  2. Increment the version in package.json
  3. Go to the dist folder and `npm publish` the new tgz file.
  4. Update the dependency in the nativescript-marketplace-demo package.json to the new version.
+
+## How to use from a NativeScript application for android
+

@@ -7,6 +7,11 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 
+import java.io.IOException;
+import java.io.ObjectStreamException;
+import java.util.Timer;
+import java.util.TimerTask;
+
 public class MainActivity extends AppCompatActivity {
 
     @Override
@@ -37,10 +42,47 @@ public class MainActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    public void onClick(View view){
-        Log.i("ATA Application", "Crashing application...");
+    public void onClick(View view) {
+        final Timer timer = new Timer();
+        timer.schedule(new TimerTask() {
+            public void run() {
+                crashApplication();
+                timer.cancel();
+            }
+        }, 100);
+    }
+
+    private static void crashApplication() {
+        int random = ((int)(Math.random() * 100)) % 8;
+        switch (random){
+            case 0:
+                Log.i("ATA Application", "Crashing the application by throwing a new RuntimeException...");
+                throw new RuntimeException("Pseudo RuntimeException");
+            case 1:
+                Log.i("ATA Application", "Crashing the application by throwing a new NullPointerException...");
+                throw new NullPointerException("Pseudo NullPointerException");
+            case 2:
+                Log.i("ATA Application", "Crashing the application by throwing a new IllegalStateException...");
+                throw new IllegalStateException("Pseudo IllegalStateException");
+            case 3:
+                Log.i("ATA Application", "Crashing the application by throwing a new IllegalArgumentException...");
+                throw new IllegalArgumentException("Pseudo IllegalArgumentException ");
+            case 4:
+                Log.i("ATA Application", "Crashing the application by throwing a new ClassCastException...");
+                throw new ClassCastException("Pseudo ClassCastException");
+            case 5:
+                Log.i("ATA Application", "Crashing the application by throwing a new ArrayIndexOutOfBoundsException...");
+                throw new ArrayIndexOutOfBoundsException("Pseudo ArrayIndexOutOfBoundsException");
+            case 6:
+                Log.i("ATA Application", "Crashing the application by throwing a new SecurityException...");
+                throw new SecurityException("Pseudo SecurityException");
+            case 7:
+                Log.i("ATA Application", "Crashing the application by throwing a new IllegalThreadStateException...");
+                throw new IllegalThreadStateException("Pseudo IllegalThreadStateException");
+        }
+
+        // Other ways to simulate a crash
         //Integer.parseInt(null);
-        //throw new RuntimeException("Simulated Application Crash");
-        onClick(null);
+        //onClick(null);
     }
 }

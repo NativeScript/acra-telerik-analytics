@@ -2,6 +2,8 @@ package org.nativescript.ata;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 import android.util.Log;
 
 import org.acra.ACRA;
@@ -23,14 +25,14 @@ import eqatec.analytics.monitor.Version;
 public class AnalyticsReportSender implements ReportSender {
     private IAnalyticsMonitor monitor;
 
-    public static void init(Application androidApplication, String analyticsProductKey, String appVersion) {
+    public static void init(Application androidApplication, String analyticsProductKey) {
         try {
             Log.i("ATA", "Initializing ACRA...");
             final ACRAConfiguration config = new ACRAConfiguration(null);
             config.setCustomReportContent(REPORT_FIELDS);
             //config.setMailTo("nativescriptteam@gmail.com");
             ACRA.init(androidApplication, config, true);
-            ReportSender reportSender = new AnalyticsReportSender(androidApplication, analyticsProductKey, appVersion);
+            ReportSender reportSender = new AnalyticsReportSender(androidApplication, analyticsProductKey);
             ACRA.getErrorReporter().addReportSender(reportSender);
             Log.i("ATA", "ACRA initialized.");
         } catch (Exception e) {
@@ -38,11 +40,12 @@ public class AnalyticsReportSender implements ReportSender {
         }
     }
 
-    public AnalyticsReportSender(Application androidApplication, String analyticsProductKey, String appVersion) {
+    public AnalyticsReportSender(Application androidApplication, String analyticsProductKey) {
         try {
             Log.i("ATA", "Creating ACRA AnalyticsReportSender...");
-            Log.i("ATA", "Creating Telerik AnalyticsMonitor with product key " + analyticsProductKey + " and application version " + appVersion + "...");
-            IAnalyticsMonitorSettings settings = AnalyticsMonitorFactory.createSettings(analyticsProductKey, new Version(appVersion));
+            int applicationVersionCode = AnalyticsReportSender.getApplicationVersionCode(androidApplication);
+            Log.i("ATA", "Creating Telerik AnalyticsMonitor with product key " + analyticsProductKey + " and application version code " + applicationVersionCode + "...");
+            IAnalyticsMonitorSettings settings = AnalyticsMonitorFactory.createSettings(analyticsProductKey, new Version(String.valueOf(applicationVersionCode)));
             settings.setLoggingInterface(AnalyticsMonitorFactory.createTraceMonitor());
             settings.setUseSsl(true);
             this.monitor = AnalyticsMonitorFactory.createMonitor(androidApplication, settings);
@@ -89,7 +92,18 @@ public class AnalyticsReportSender implements ReportSender {
         }
     }
 
-    public static final ReportField[] REPORT_FIELDS = {
+    private static int getApplicationVersionCode(Application androidApplication){
+        try {
+            PackageInfo pInfo = androidApplication.getPackageManager().getPackageInfo(androidApplication.getPackageName(), 0);
+            int versionCode = pInfo.versionCode;
+            return versionCode;
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+            return -1;
+        }
+    }
+
+    private static final ReportField[] REPORT_FIELDS = {
             ReportField.REPORT_ID,
             ReportField.APP_VERSION_CODE,
             ReportField.APP_VERSION_NAME,

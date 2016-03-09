@@ -36,6 +36,7 @@ public class AnalyticsReportSender implements ReportSender {
             ACRA.getErrorReporter().addReportSender(reportSender);
             Log.i("ATA", "ACRA initialized.");
         } catch (Exception e) {
+            Log.e("ATA", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -44,8 +45,13 @@ public class AnalyticsReportSender implements ReportSender {
         try {
             Log.i("ATA", "Creating ACRA AnalyticsReportSender...");
             int applicationVersionCode = AnalyticsReportSender.getApplicationVersionCode(androidApplication);
-            Log.i("ATA", "Creating Telerik AnalyticsMonitor with product key " + analyticsProductKey + " and application version code " + applicationVersionCode + "...");
-            IAnalyticsMonitorSettings settings = AnalyticsMonitorFactory.createSettings(analyticsProductKey, new Version(String.valueOf(applicationVersionCode)));
+
+            // Telerik Analytics wants the version to be in the format major.minor[.build[.revision]], but we want to track our version code instead of version name
+            // That is why we will send them a fake version name consisting of "applicationVersionCode.0"
+            String applicationVersionName = applicationVersionCode + ".0";
+
+            Log.i("ATA", "Creating Telerik AnalyticsMonitor with product key " + analyticsProductKey + " and application version code " + applicationVersionName + "...");
+            IAnalyticsMonitorSettings settings = AnalyticsMonitorFactory.createSettings(analyticsProductKey, new Version(applicationVersionName));
             settings.setLoggingInterface(AnalyticsMonitorFactory.createTraceMonitor());
             settings.setUseSsl(true);
             this.monitor = AnalyticsMonitorFactory.createMonitor(androidApplication, settings);
@@ -54,6 +60,7 @@ public class AnalyticsReportSender implements ReportSender {
             Log.i("ATA", "Telerik AnalyticsMonitor created with installationId " + installationId);
             Log.i("ATA", "ACRA AnalyticsReportSender created.");
         } catch (Exception e) {
+            Log.e("ATA", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -62,6 +69,11 @@ public class AnalyticsReportSender implements ReportSender {
     public void send(Context context, CrashReportData report) throws ReportSenderException {
         try {
             Log.i("ATA", "Sending ACRA CrashReportData to Telerik Analytics...");
+
+            if (this.monitor == null) {
+                Log.e("ATA", "No AnalyticsMonitor found.");
+                return;
+            }
 
             if (!this.monitor.getStatus().getIsStarted()) {
                 Log.i("ATA", "Starting Telerik AnalyticsMonitor...");
@@ -88,6 +100,7 @@ public class AnalyticsReportSender implements ReportSender {
                 Log.i("ATA", "Telerik AnalyticsMonitor stopped.");
             }
         } catch (Exception e) {
+            Log.e("ATA", e.getMessage());
             e.printStackTrace();
         }
     }
@@ -97,9 +110,10 @@ public class AnalyticsReportSender implements ReportSender {
             PackageInfo pInfo = androidApplication.getPackageManager().getPackageInfo(androidApplication.getPackageName(), 0);
             int versionCode = pInfo.versionCode;
             return versionCode;
-        } catch (PackageManager.NameNotFoundException e) {
+        } catch (Exception e) {
+            Log.e("ATA", e.getMessage());
             e.printStackTrace();
-            return -1;
+            return 0;
         }
     }
 
@@ -117,7 +131,7 @@ public class AnalyticsReportSender implements ReportSender {
             ReportField.TOTAL_MEM_SIZE,
             ReportField.AVAILABLE_MEM_SIZE,
             ReportField.BUILD_CONFIG,
-            ReportField.CUSTOM_DATA,
+            //ReportField.CUSTOM_DATA,
             ReportField.IS_SILENT,
             ReportField.STACK_TRACE,
             ReportField.INITIAL_CONFIGURATION,
@@ -127,11 +141,11 @@ public class AnalyticsReportSender implements ReportSender {
             ReportField.USER_EMAIL,
             ReportField.USER_APP_START_DATE,
             ReportField.USER_CRASH_DATE,
-            ReportField.DUMPSYS_MEMINFO,
+            //ReportField.DUMPSYS_MEMINFO,
             //LOGCAT,
             ReportField.INSTALLATION_ID,
             ReportField.DEVICE_FEATURES,
             ReportField.ENVIRONMENT,
-            ReportField.SHARED_PREFERENCES
+            //ReportField.SHARED_PREFERENCES
     };
 }

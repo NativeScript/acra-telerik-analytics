@@ -16,4 +16,10 @@
     "url": "https://github.com/NativeScript/acra-telerik-analytics/issues"
   },
   "homepage": "https://github.com/NativeScript/acra-telerik-analytics#readme"
+  "nativescript": {
+    "platforms": {
+      "ios": "2.0.0",
+      "android": "2.0.0"
+    }
+  }
 }

@@ -82,15 +82,22 @@ public class AnalyticsReportSender implements ReportSender {
             }
 
             String realStackTrace = report.get(ReportField.STACK_TRACE);
+
+            // The stack trace hash will be sent to Telerik Analytics as the exception message so we
+            // can group by this field to detect identical exceptions.
+            String stackTraceHash = Integer.toString(realStackTrace.hashCode());
+            Log.i("ATA", "Stack Trace hash is " + stackTraceHash);
+
             String exceptionType = realStackTrace.substring(0, realStackTrace.indexOf(':'));
             Log.i("ATA", "Detected exceptionType is " + exceptionType);
+
             // We will send the entire detailed ACRA report as the StackTrace field to Telerik Analytics.
             String pseudoStackTrace = report.toJSON().toString();
 
             this.monitor.trackExceptionRawMessage(exceptionType,
-                    "ACRA detected an application crash. Full crash details are contained in the pseudo stack trace as JSON.",
+                    stackTraceHash,
                     pseudoStackTrace,
-                    "ACRA detected an application crash. Full crash details are contained in the pseudo stack trace as JSON.");
+                    stackTraceHash);
 
             Log.i("ATA", "ACRA CrashReportData sent to Telerik Analytics.");
 

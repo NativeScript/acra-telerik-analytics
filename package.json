@@ -1,6 +1,6 @@
 {
   "name": "acra-telerik-analytics",
-  "version": "0.0.2",
+  "version": "0.0.3",
   "description": "Android library that captures exceptions with ACRA and sends them to Telerik Analytics.",
   "main": "index.js",
   "scripts": {
